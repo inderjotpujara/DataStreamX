@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'data-processor'
+    static_configs:
+      - targets: ['data-processor:9093']
+
+  - job_name: 'data-ingestion'
+    static_configs:
+      - targets: ['data-ingestion:9091']

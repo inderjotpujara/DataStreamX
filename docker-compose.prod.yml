@@ -5,9 +5,12 @@ services:
     build: 
       context: ./backend
       target: production
+    ports:
+      - "9091:9091"
     command: npm start
     environment:
       - NODE_ENV=production
+      - METRICS_PORT=9091
 
   data-ingestion:
     build:
@@ -21,9 +24,15 @@ services:
     build: 
       context: ./backend/data-processor
       target: production
+    ports:
+      - "9093:9093"
     command: npm start
     environment:
       - NODE_ENV=production
+      - METRICS_PORT=9093
+    depends_on:
+      db:
+        condition: service_healthy
 
   kafka:
     environment:

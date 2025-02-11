@@ -18,23 +18,33 @@ services:
     build:
       context: ./backend/data-ingestion
       target: development
+    ports:
+      - "9091:9091"
     command: npm run dev
     volumes:
       - ./backend/data-ingestion:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
+      - METRICS_PORT=9091
 
   data-processor:
     build: 
       context: ./backend/data-processor
       target: development
+    ports:
+      - "9093:9093"
     command: npm run dev
     volumes:
       - ./backend/data-processor:/app
-      - /app/node_modules
+      - /app/node_modules  # Anonymous volume for node_modules
     environment:
       - NODE_ENV=development
+      - METRICS_PORT=9093
+      - DB_FORCE_SYNC=false
+    depends_on:
+      db:
+        condition: service_healthy
 
   kafka:
     ports:

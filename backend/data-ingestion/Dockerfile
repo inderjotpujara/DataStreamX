@@ -17,6 +17,11 @@ ENV NODE_ENV=development
 RUN npm ci
 COPY . .
 RUN mkdir -p dist
+# Expose port for development
+EXPOSE 9091
+# Healthcheck for development
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${METRICS_PORT}/metrics || exit 1
 CMD ["npm", "run", "dev"]
 
 # ---- Production Stage ----
@@ -25,4 +30,9 @@ ENV NODE_ENV=production
 RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/.env.example ./.env.example
+# Expose port for development
+EXPOSE 9091
+# Healthcheck for development
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${METRICS_PORT}/metrics || exit 1
 CMD ["npm", "start"]

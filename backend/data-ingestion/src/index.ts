@@ -2,6 +2,7 @@ import { Kafka } from 'kafkajs';
 import { faker } from '@faker-js/faker';
 import dotenv from 'dotenv';
 import { KafkaProducerWrapper } from './kafka/producer';
+import { startMetricsServer } from './utils/metrics';
 
 // Load environment variables
 dotenv.config();
@@ -38,6 +39,7 @@ const generateSensorData = () => ({
 async function startSimulation() {
  try {
     await producer.connect();
+    startMetricsServer();
     
     setInterval(async () => {
       const batchSize = parseInt(process.env.BATCH_SIZE || '10');
