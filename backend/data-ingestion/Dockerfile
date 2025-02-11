@@ -1,18 +1,22 @@
 FROM node:18-alpine
+
 WORKDIR /app
 
-# Copy package.json and install dependencies
+# Copy package files
 COPY package*.json ./
-RUN npm install --production
+RUN npm install
 
-# Copy the rest of the code
+# Copy source code and config files
 COPY . .
 
-# Expose a port if needed (not strictly necessary if the service doesn't receive HTTP requests)
-EXPOSE 4000
+# Create dist directory
+RUN mkdir -p dist
 
 # Build TypeScript
 RUN npm run build
+
+# Verify the build output exists
+RUN ls -la dist/
 
 # Run the compiled JavaScript
 CMD ["npm", "start"]
