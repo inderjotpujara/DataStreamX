@@ -1,12 +1,28 @@
-FROM node:18-alpine
-
+# ---- Base Node.js Stage ----
+FROM node:18-alpine AS base
 WORKDIR /app
-
 COPY package*.json ./
-RUN npm install
 
+# ---- Dependencies & Build Stage ----
+FROM base AS builder
+ENV NODE_ENV=development
+RUN npm ci
 COPY . .
-
 RUN npm run build
+RUN ls -la dist/
 
+# ---- Development Stage ----
+FROM base AS development
+ENV NODE_ENV=development
+RUN npm ci
+COPY . .
+RUN mkdir -p dist
+CMD ["npm", "run", "dev"]
+
+# ---- Production Stage ----
+FROM base AS production
+ENV NODE_ENV=production
+RUN npm ci --only=production
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/.env.example ./.env.example
 CMD ["npm", "start"]

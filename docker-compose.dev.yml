@@ -1,0 +1,46 @@
+# docker-compose.dev.yml
+version: '3.8'
+services:
+  api:
+    build: 
+      context: ./backend
+      target: development
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+
+  data-ingestion:
+    build:
+      context: ./backend/data-ingestion
+      target: development
+    command: npm run dev
+    volumes:
+      - ./backend/data-ingestion:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+
+  data-processor:
+    build: 
+      context: ./backend/data-processor
+      target: development
+    command: npm run dev
+    volumes:
+      - ./backend/data-processor:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+
+  kafka:
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"

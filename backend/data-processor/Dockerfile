@@ -1,22 +1,44 @@
-FROM node:18-alpine
-
+# ---- Base Node.js Stage ----
+FROM node:18-alpine AS base
 WORKDIR /app
-
-# Copy package files
+# Cache package files
 COPY package*.json ./
-RUN npm install
 
-# Copy source code and config files
+# ---- Dependencies & Build Stage ----
+FROM base AS builder
+# Set to development for dev dependencies
+ENV NODE_ENV=development
+# Install all dependencies including devDependencies
+RUN npm ci
+# Copy source code
 COPY . .
-
-# Create dist directory
-RUN mkdir -p dist
-
 # Build TypeScript
 RUN npm run build
-
-# Verify the build output exists
+# Verify build output
 RUN ls -la dist/
 
-# Run the compiled JavaScript
+# ---- Development Stage ----
+FROM base AS development
+# Set development environment
+ENV NODE_ENV=development
+# Install all dependencies including devDependencies
+RUN npm ci
+# Copy source files for hot reloading
+COPY . .
+# Create dist directory to avoid permission issues
+RUN mkdir -p dist
+# Start development mode with hot reloading
+CMD ["npm", "run", "dev"]
+
+# ---- Production Stage ----
+FROM base AS production
+# Set production environment
+ENV NODE_ENV=production
+# Install only production dependencies
+RUN npm ci --only=production
+# Copy build artifacts from builder
+COPY --from=builder /app/dist ./dist
+# Copy production configs if any
+COPY --from=builder /app/.env.example ./.env.example
+# Start production server
 CMD ["npm", "start"]

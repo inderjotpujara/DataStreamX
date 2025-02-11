@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
-    "build": "tsc"
+    "build": "npm run clean && tsc",
+    "clean": "rm -rf dist"
   },
   "keywords": [],
   "author": "",

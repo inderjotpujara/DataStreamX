@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.7",  
+    "dotenv": "^16.4.7",
     "exponential-backoff": "^3.1.2",
     "kafkajs": "^2.2.4",
     "pg": "^8.13.1",

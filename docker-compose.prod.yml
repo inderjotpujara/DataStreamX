@@ -1,0 +1,31 @@
+# docker-compose.prod.yml
+version: '3.8'
+services:
+  api:
+    build: 
+      context: ./backend
+      target: production
+    command: npm start
+    environment:
+      - NODE_ENV=production
+
+  data-ingestion:
+    build:
+      context: ./backend/data-ingestion
+      target: production
+    command: npm start
+    environment:
+      - NODE_ENV=production
+
+  data-processor:
+    build: 
+      context: ./backend/data-processor
+      target: production
+    command: npm start
+    environment:
+      - NODE_ENV=production
+
+  kafka:
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
