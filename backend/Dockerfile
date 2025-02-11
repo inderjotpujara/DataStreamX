@@ -6,7 +6,7 @@ COPY package*.json ./
 # ---- Dependencies & Build Stage ----
 FROM base AS builder
 ENV NODE_ENV=development
-RUN npm ci
+RUN npm i
 COPY . .
 RUN npm run build
 RUN ls -la dist/
@@ -14,7 +14,7 @@ RUN ls -la dist/
 # ---- Development Stage ----
 FROM base AS development
 ENV NODE_ENV=development
-RUN npm ci
+RUN npm i
 COPY . .
 RUN mkdir -p dist
 CMD ["npm", "run", "dev"]
@@ -22,7 +22,7 @@ CMD ["npm", "run", "dev"]
 # ---- Production Stage ----
 FROM base AS production
 ENV NODE_ENV=production
-RUN npm ci --only=production
+RUN npm i --only=production
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/.env.example ./.env.example
 CMD ["npm", "start"]

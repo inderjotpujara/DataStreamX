@@ -24,6 +24,8 @@ services:
     command: npm start
     environment:
       - NODE_ENV=production
+    depends_on:
+      - kafka
 
   kafka:
     environment:
