@@ -27,6 +27,11 @@ RUN npm ci
 COPY . .
 # Create dist directory to avoid permission issues
 RUN mkdir -p dist
+# Expose port for development
+EXPOSE 9093
+# Healthcheck for development
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${METRICS_PORT}/metrics || exit 1
 # Start development mode with hot reloading
 CMD ["npm", "run", "dev"]
 
@@ -40,5 +45,10 @@ RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
 # Copy production configs if any
 COPY --from=builder /app/.env.example ./.env.example
+# Expose port for production
+EXPOSE 9093
+# Healthcheck for production
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${METRICS_PORT}/metrics || exit 1
 # Start production server
 CMD ["npm", "start"]

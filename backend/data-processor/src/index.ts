@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
-import { sequelize } from './database';
+import { initializeDatabase, sequelize } from './database';
 import { KafkaConsumerWrapper } from './kafka/consumer';
+import { startMetricsServer } from './utils/metrics';
 
 // Load environment variables
 dotenv.config();
@@ -14,8 +15,11 @@ const kafkaConfig = {
 
 async function startProcessing() {
   try {
+    // Start metrics server
+    startMetricsServer();
+
     // Initialize database
-    await sequelize.sync();
+     await initializeDatabase();
     console.log('Database synchronized successfully');
 
     // Initialize Kafka consumer
