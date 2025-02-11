@@ -9,7 +9,7 @@ FROM base AS builder
 # Set to development for dev dependencies
 ENV NODE_ENV=development
 # Install all dependencies including devDependencies
-RUN npm ci
+RUN npm i
 # Copy source code
 COPY . .
 # Build TypeScript
@@ -22,7 +22,7 @@ FROM base AS development
 # Set development environment
 ENV NODE_ENV=development
 # Install all dependencies including devDependencies
-RUN npm ci
+RUN npm i
 # Copy source files for hot reloading
 COPY . .
 # Create dist directory to avoid permission issues
@@ -35,7 +35,7 @@ FROM base AS production
 # Set production environment
 ENV NODE_ENV=production
 # Install only production dependencies
-RUN npm ci --only=production
+RUN npm i --only=production
 # Copy build artifacts from builder
 COPY --from=builder /app/dist ./dist
 # Copy production configs if any
